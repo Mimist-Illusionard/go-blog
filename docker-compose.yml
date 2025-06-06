@@ -3,7 +3,7 @@ version: 1.0.0
 services:   
   postgres:
     image: postgres
-    container_name: go-blog
+    container_name: go-blog_postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: password
@@ -11,4 +11,11 @@ services:
     volumes:
       - ./postgres-data:/var/lib/postgresql/data
     ports:
-      - "5432:5432"
+      - "6969:6969"
+  sqlite:
+    image: dockerpinata/sqlite
+    container_name: go-blog_sqlite
+    volumes:
+      - ./sqlite:/db
+    ports:
+      - "1448:1448"

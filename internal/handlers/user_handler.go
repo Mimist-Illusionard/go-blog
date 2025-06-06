@@ -2,22 +2,23 @@ package handlers
 
 import (
 	"go-blog/internal/models"
-	service "go-blog/internal/services"
+	"go-blog/internal/services"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
 
 type UserHandler struct {
-	Service *service.UserService
+	Service *services.UserService
 }
 
-func CreateUserHandler(s *service.UserService) *UserHandler {
+func CreateUserHandler(s *services.UserService) *UserHandler {
 	return &UserHandler{Service: s}
 }
 
 func (h *UserHandler) InitializeHandler(ginEngine *gin.Engine) {
-	ginEngine.POST("/user/", h.Create)
-	ginEngine.POST("/login/", h.Login)
+	ginEngine.POST("/users/", h.Create)
+	ginEngine.POST("/auth/", h.Authorization)
 }
 
 func (h *UserHandler) Create(c *gin.Context) {
@@ -27,7 +28,7 @@ func (h *UserHandler) Create(c *gin.Context) {
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid input", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input", "details": err.Error()})
 		return
 	}
 
@@ -38,29 +39,29 @@ func (h *UserHandler) Create(c *gin.Context) {
 
 	err := h.Service.CreateUser(user)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Couldn't create user", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't create user", "details": err.Error()})
 		return
 	}
 
-	c.JSON(201, gin.H{"message": "User created"})
+	c.JSON(http.StatusOK, gin.H{"message": "User created"})
 }
 
-func (h *UserHandler) Login(c *gin.Context) {
+func (h *UserHandler) Authorization(c *gin.Context) {
 	var req struct {
 		Login    string `json:"login"`
 		Password string `json:"password"`
 	}
 
 	if err := c.ShouldBindJSON(&req); err != nil {
-		c.JSON(400, gin.H{"error": "invalid input", "details": err.Error()})
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input", "details": err.Error()})
 		return
 	}
 
 	err := h.Service.Login(req.Login, req.Password)
 	if err != nil {
-		c.JSON(500, gin.H{"error": "Incorrect password or login", "details": err.Error()})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Incorrect password or login", "details": err.Error()})
 		return
 	}
 
-	c.JSON(201, gin.H{"message": "Login succesfull"})
+	c.JSON(http.StatusOK, gin.H{"message": "Login succesfull"})
 }

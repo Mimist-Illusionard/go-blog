@@ -1,7 +1,10 @@
 package models
 
 type Comment struct {
-	ID    uint `gorm:"primaryKey"`
-	Owner string
-	Text  string
+	ID     uint   `gorm:"primaryKey"`
+	Text   string `gorm:"not null"`
+	UserID uint
+	User   User `gorm:"foreignKey:UserID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL;"`
+	PostID uint
+	Post   Post `gorm:"foreignKey:PostID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE;"`
 }

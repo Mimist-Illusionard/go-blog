@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"go-blog/config"
 	"go-blog/internal/handlers"
 	"go-blog/internal/models"
@@ -9,28 +10,39 @@ import (
 	"go-blog/utils/log"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
+	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func main() {
-	db, err := gorm.Open(postgres.Open(config.LoadDatabaseConfig().GetDSN()), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(config.LoadDatabaseConfig().GetDSN()), &gorm.Config{})
 	if err != nil {
 		log.Error("Failde to connect to database", err)
 	}
 
-	db.AutoMigrate(&models.User{})
-	db.AutoMigrate(&models.Post{})
-	db.AutoMigrate(&models.Comment{})
+	err = db.AutoMigrate(
+		&models.User{},
+		&models.Post{},
+		&models.Comment{},
+	)
+
+	if err != nil {
+		fmt.Errorf("Failed to migrate: %v", err)
+	}
 
 	userRepository := &repository.UserGORMRepository{DB: db}
 	userService := services.NewUserSevice(userRepository)
 	userHandler := handlers.CreateUserHandler(userService)
 
+	postRepository := &repository.PostGORMRepository{DB: db}
+	postService := services.NewPostService(postRepository)
+	postHandler := handlers.CreatePostHandler(postService)
+
 	var ginEngine = gin.New()
 	ginEngine.Use(CORSMiddleware())
 
 	userHandler.InitializeHandler(ginEngine)
+	postHandler.InitializeHandler(ginEngine)
 
 	ginEngine.Run(":9090")
 }
