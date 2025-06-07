@@ -27,7 +27,7 @@ func (s *PostService) DeletePost(id uint) error {
 }
 
 func (s *PostService) GetPostByID(id uint) (*models.Post, error) {
-	return s.repo.GetPostByID(id)
+	return s.repo.GetPostWithComments(id)
 }
 
 func (s *PostService) GetAllPosts() (*[]models.Post, error) {

@@ -10,12 +10,14 @@ import (
 	"go-blog/utils/log"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
+
+	//"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 func main() {
-	db, err := gorm.Open(sqlite.Open(config.LoadDatabaseConfig().GetDSN()), &gorm.Config{})
+	db, err := gorm.Open(postgres.Open(config.LoadDatabaseConfig().GetDSN()), &gorm.Config{})
 	if err != nil {
 		log.Error("Failde to connect to database", err)
 	}
@@ -38,11 +40,16 @@ func main() {
 	postService := services.NewPostService(postRepository)
 	postHandler := handlers.CreatePostHandler(postService)
 
+	commentRepository := &repository.CommentGORMRepository{DB: db}
+	commentService := services.NewCommentService(commentRepository)
+	commentHandler := handlers.CreateCommentHandler(commentService)
+
 	var ginEngine = gin.New()
 	ginEngine.Use(CORSMiddleware())
 
 	userHandler.InitializeHandler(ginEngine)
 	postHandler.InitializeHandler(ginEngine)
+	commentHandler.InitializeHandler(ginEngine)
 
 	ginEngine.Run(":9090")
 }

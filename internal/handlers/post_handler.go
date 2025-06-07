@@ -21,13 +21,13 @@ func (h *PostHandler) InitializeHandler(ginEngine *gin.Engine) {
 	ginEngine.GET("/posts/*id", h.Get)
 	ginEngine.POST("/posts/", h.Create)
 	ginEngine.PUT("/posts/:id", h.Put)
-	ginEngine.DELETE("/posts/:id", h.Create)
+	ginEngine.DELETE("/posts/:id", h.Delete)
 }
 
 func (h *PostHandler) Get(c *gin.Context) {
 	postID := c.Param("id")
 
-	if postID != "" {
+	if postID != "/" {
 		id, err := strconv.Atoi(postID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
@@ -80,36 +80,55 @@ func (h *PostHandler) Create(c *gin.Context) {
 func (h *PostHandler) Put(c *gin.Context) {
 	postID := c.Param("id")
 
-	if postID != "" {
-		id, err := strconv.Atoi(postID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
-			return
-		}
-
-		post, err := h.Service.GetPostByID(uint(id))
-		if err != nil {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
-			return
-		}
-
-		c.JSON(http.StatusOK, post)
+	id, err := strconv.Atoi(postID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
 		return
 	}
+
+	var req struct {
+		UserID uint   `json:"user_id"`
+		Text   string `json:"text"`
+	}
+
+	if err := c.ShouldBindJSON(&req); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "invalid input", "details": err.Error()})
+		return
+	}
+
+	editedPost := &models.Post{
+		Text: req.Text,
+	}
+
+	if err := h.Service.EditPost(uint(id), editedPost); err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update post"})
+		return
+	}
+
+	post, err := h.Service.GetPostByID(uint(id))
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, post)
 }
 
 func (h *PostHandler) Delete(c *gin.Context) {
 	postID := c.Param("id")
 
-	if postID != "" {
-		id, err := strconv.Atoi(postID)
-		if err != nil {
-			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
-			return
-		}
-
-		post := h.Service.DeletePost(uint(id))
-		c.JSON(http.StatusOK, post)
+	id, err := strconv.Atoi(postID)
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
 		return
 	}
+
+	err = h.Service.DeletePost(uint(id))
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Can't delete post"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Post deleted"})
 }

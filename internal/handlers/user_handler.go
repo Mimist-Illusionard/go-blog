@@ -4,6 +4,7 @@ import (
 	"go-blog/internal/models"
 	"go-blog/internal/services"
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 )
@@ -17,6 +18,7 @@ func CreateUserHandler(s *services.UserService) *UserHandler {
 }
 
 func (h *UserHandler) InitializeHandler(ginEngine *gin.Engine) {
+	ginEngine.GET("/users/*id", h.Get)
 	ginEngine.POST("/users/", h.Create)
 	ginEngine.POST("/auth/", h.Authorization)
 }
@@ -64,4 +66,33 @@ func (h *UserHandler) Authorization(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Login succesfull"})
+}
+
+func (h *UserHandler) Get(c *gin.Context) {
+	postID := c.Param("id")
+
+	if postID != "/" {
+		id, err := strconv.Atoi(postID)
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
+			return
+		}
+
+		post, err := h.Service.GetUserByID(uint(id))
+		if err != nil {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Post not found"})
+			return
+		}
+
+		c.JSON(http.StatusOK, post)
+		return
+	}
+
+	posts, err := h.Service.GetAllUsers()
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not get posts"})
+		return
+	}
+
+	c.JSON(http.StatusOK, posts)
 }

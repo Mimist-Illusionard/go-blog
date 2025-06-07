@@ -8,6 +8,8 @@ import (
 
 type UserRepository interface {
 	Create(user *models.User) error
+
+	GetAllUsers() (*[]models.User, error)
 	GetByLogin(login string) (*models.User, error)
 	GetByID(id uint) (*models.User, error)
 }
@@ -30,4 +32,15 @@ func (r *UserGORMRepository) GetByID(id uint) (*models.User, error) {
 	var user models.User
 	err := r.DB.Find(&user, id).Error
 	return &user, err
+}
+
+func (r *UserGORMRepository) GetAllUsers() (*[]models.User, error) {
+	var users []models.User
+	result := r.DB.Find(&users)
+
+	if result.Error != nil {
+		return nil, result.Error
+	}
+
+	return &users, nil
 }

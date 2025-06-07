@@ -14,6 +14,14 @@ func NewUserSevice(r repository.UserRepository) *UserService {
 	return &UserService{repo: r}
 }
 
+func (s *UserService) GetUserByID(id uint) (*models.User, error) {
+	return s.repo.GetByID(id)
+}
+
+func (s *UserService) GetAllUsers() (*[]models.User, error) {
+	return s.repo.GetAllUsers()
+}
+
 func (s *UserService) CreateUser(user *models.User) error {
 	dbUser, _ := s.repo.GetByLogin(user.Login)
 

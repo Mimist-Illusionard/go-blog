@@ -12,6 +12,7 @@ type PostRepository interface {
 	Delete(id uint) error
 
 	GetPostByID(id uint) (*models.Post, error)
+	GetPostWithComments(postId uint) (*models.Post, error)
 	GetAllPosts() (*[]models.Post, error)
 }
 
@@ -24,18 +25,13 @@ func (r *PostGORMRepository) Create(post *models.Post) error {
 }
 
 func (r *PostGORMRepository) Edit(id uint, post *models.Post) error {
-	return r.DB.Find(post, id).Updates(post).Error
+	return r.DB.Model(&models.Post{}).Where("id = ?", id).Updates(map[string]interface{}{
+		"Text": post.Text,
+	}).Error
 }
 
 func (r *PostGORMRepository) Delete(id uint) error {
-
-	post, err := r.GetPostByID(id)
-
-	if err != nil {
-		return err
-	}
-
-	return r.DB.Delete(post).Error
+	return r.DB.Delete(&models.Post{}, id).Error
 }
 
 func (r *PostGORMRepository) GetPostByID(id uint) (*models.Post, error) {
@@ -43,6 +39,18 @@ func (r *PostGORMRepository) GetPostByID(id uint) (*models.Post, error) {
 	err := r.DB.First(&post, id).Error
 
 	return &post, err
+}
+
+func (r *PostGORMRepository) GetPostWithComments(postId uint) (*models.Post, error) {
+	var post models.Post
+	err := r.DB.
+		Preload("Comments").
+		Preload("Comments.User").
+		First(&post, postId).Error
+	if err != nil {
+		return nil, err
+	}
+	return &post, nil
 }
 
 func (r *PostGORMRepository) GetAllPosts() (*[]models.Post, error) {
