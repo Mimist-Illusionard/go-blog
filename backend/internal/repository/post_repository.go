@@ -55,7 +55,10 @@ func (r *PostGORMRepository) GetPostWithComments(postId uint) (*models.Post, err
 
 func (r *PostGORMRepository) GetAllPosts() (*[]models.Post, error) {
 	var posts []models.Post
-	result := r.DB.Find(&posts)
+
+	result := r.DB.
+		Preload("User").
+		Find(&posts)
 
 	if result.Error != nil {
 		return nil, result.Error

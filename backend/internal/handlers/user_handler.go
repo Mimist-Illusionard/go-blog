@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"go-blog/backend/internal/dto"
 	"go-blog/backend/internal/models"
 	"go-blog/backend/internal/services"
 	"net/http"
@@ -88,11 +89,19 @@ func (h *UserHandler) Get(c *gin.Context) {
 		return
 	}
 
-	posts, err := h.Service.GetAllUsers()
+	users, err := h.Service.GetAllUsers()
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not get posts"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Could not get users"})
 		return
 	}
 
-	c.JSON(http.StatusOK, posts)
+	var response []dto.UserResponse
+	for _, user := range *users {
+		response = append(response, dto.UserResponse{
+			ID:    user.ID,
+			Login: user.Login,
+		})
+	}
+
+	c.JSON(http.StatusOK, response)
 }

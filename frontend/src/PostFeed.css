@@ -1,0 +1,42 @@
+.dark-background {
+  background-color: #141414;
+  min-height: 100vh;
+  padding: 2rem;
+}
+
+.post-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  background-color: #29282a !important;
+  color: #1f1f1f;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.fixed-height {
+  height: 250px;
+}
+
+.post-author {
+  font-weight: 600;
+  color: #05f2e9;
+}
+
+.post-text {
+  font-size: 1rem;
+  color: #D9D9D9;
+}
+
+.center-text {
+  text-align: center;
+  padding: 1rem;
+  font-size: 1.2rem;
+  color: #D9D9D9;
+}
+
+.error-text {
+  color: red;
+}

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"go-blog/backend/internal/dto"
 	"go-blog/backend/internal/models"
 	"go-blog/backend/internal/services"
 	"net/http"
@@ -50,7 +51,16 @@ func (h *PostHandler) Get(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, posts)
+	var response []dto.PostResponse
+	for _, post := range *posts {
+		response = append(response, dto.PostResponse{
+			ID:     post.ID,
+			Text:   post.Text,
+			Author: post.User.Login,
+		})
+	}
+
+	c.JSON(http.StatusOK, response)
 }
 
 func (h *PostHandler) Create(c *gin.Context) {
@@ -74,7 +84,17 @@ func (h *PostHandler) Create(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Post created"})
+	c.JSON(http.StatusOK, struct {
+		Message string           `json:"message"`
+		Post    dto.PostResponse `json:"post"`
+	}{
+		Message: "Post created",
+		Post: dto.PostResponse{
+			ID:     post.ID,
+			Text:   post.Text,
+			Author: post.User.Login,
+		},
+	})
 }
 
 func (h *PostHandler) Put(c *gin.Context) {
@@ -111,7 +131,11 @@ func (h *PostHandler) Put(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, post)
+	c.JSON(http.StatusOK, dto.PostResponse{
+		ID:     post.ID,
+		Text:   post.Text,
+		Author: post.User.Login,
+	})
 }
 
 func (h *PostHandler) Delete(c *gin.Context) {
