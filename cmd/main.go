@@ -10,9 +10,8 @@ import (
 	"go-blog/utils/log"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
 
-	//"gorm.io/driver/sqlite"
+	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
 
