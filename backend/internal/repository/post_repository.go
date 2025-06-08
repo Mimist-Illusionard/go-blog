@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"go-blog/internal/models"
+	"go-blog/backend/internal/models"
 
 	"gorm.io/gorm"
 )

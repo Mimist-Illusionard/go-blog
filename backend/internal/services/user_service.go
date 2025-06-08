@@ -2,8 +2,8 @@ package services
 
 import (
 	"fmt"
-	"go-blog/internal/models"
-	"go-blog/internal/repository"
+	"go-blog/backend/internal/models"
+	"go-blog/backend/internal/repository"
 )
 
 type UserService struct {

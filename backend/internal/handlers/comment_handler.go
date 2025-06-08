@@ -1,8 +1,8 @@
 package handlers
 
 import (
-	"go-blog/internal/models"
-	"go-blog/internal/services"
+	"go-blog/backend/internal/models"
+	"go-blog/backend/internal/services"
 	"net/http"
 	"strconv"
 
