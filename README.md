@@ -54,4 +54,5 @@ go-blog-postgres will run PostgreSQL on port 5432
 docker-compose down
 ```
 
-
+## Postman collection
+https://orange-crescent-5490765.postman.co/workspace/Test.Ayo's-Workspace~c4089bd2-231e-4d63-8d8b-3d0cded6c412/collection/44290956-5a1b022b-0ad0-4823-a6b4-2fb8bea928b5?action=share&creator=44290956
