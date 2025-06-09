@@ -1,19 +1,24 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './AppToolbar.css';
 
 const AppToolbar: React.FC = () => {
   const navigate = useNavigate();
+  const location = useLocation();
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    navigate('/login');
   };
 
   const handleLogoClick = () => {
-    navigate('/');
+    if (!isLoginPage) {
+    navigate('/feed');
+    }
   };
+
+  const isLoginPage = location.pathname === '/login' || location.pathname === '/';
 
   return (
     <AppBar position="static" className="app-toolbar">
@@ -27,9 +32,12 @@ const AppToolbar: React.FC = () => {
         >
           Codebase
         </Typography>
-        <Button color="inherit" onClick={handleLogout} className="app-toolbar-logout">
-          Выйти
-        </Button>
+
+        {!isLoginPage && (
+          <Button color="inherit" onClick={handleLogout} className="app-toolbar-logout">
+            Выйти
+          </Button>
+        )}
       </Toolbar>
     </AppBar>
   );

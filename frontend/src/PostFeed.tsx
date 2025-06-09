@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { 
   Card, 
   CardContent, 
@@ -7,7 +7,9 @@ import {
   Container, 
   CardActionArea,
   CircularProgress,
-  Alert
+  Alert,
+  Button,
+  Box
 } from '@mui/material';
 import Grid from '@mui/material/Grid';
 import './PostFeed.css';
@@ -23,6 +25,7 @@ const PostFeed: React.FC = () => {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchPosts = async () => {
@@ -61,17 +64,29 @@ const PostFeed: React.FC = () => {
 
   return (
     <Container maxWidth="lg" className="post-feed-container dark-background">
-      <Typography 
-        variant="h3" 
-        align="center" 
-        gutterBottom 
-        fontWeight="bold" 
-        color="white"
-        sx={{ marginTop: 4, marginBottom: 6 }}
-      >
-        Forum
-      </Typography>
-      
+      <Box display="flex" justifyContent="space-between" alignItems="center" sx={{ mt: 4, mb: 2 }}>
+        <Typography 
+          variant="h3" 
+          fontWeight="bold" 
+          color="white"
+        >
+          Forum
+        </Typography>
+        <Button 
+          variant="contained" 
+          sx={{
+            backgroundColor: '#05e9e1',
+            color: '#000',
+            '&:hover': {
+              backgroundColor: '#04d2cc'
+            }
+          }}
+          onClick={() => navigate('/create-post')}
+        >
+          Создать пост
+        </Button>
+      </Box>
+
       <Grid container spacing={4} justifyContent="center">
         {posts.map((post) => (
           <Grid key={post.id} size={{ sm: 6, md: 4 }}>

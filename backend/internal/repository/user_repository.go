@@ -7,7 +7,7 @@ import (
 )
 
 type UserRepository interface {
-	Create(user *models.User) error
+	Create(user *models.User) (*models.User, error)
 
 	GetAllUsers() (*[]models.User, error)
 	GetByLogin(login string) (*models.User, error)
@@ -18,8 +18,9 @@ type UserGORMRepository struct {
 	DB *gorm.DB
 }
 
-func (r *UserGORMRepository) Create(user *models.User) error {
-	return r.DB.Create(user).Error
+func (r *UserGORMRepository) Create(user *models.User) (*models.User, error) {
+	err := r.DB.Create(user).Error
+	return user, err
 }
 
 func (r *UserGORMRepository) GetByLogin(login string) (*models.User, error) {

@@ -40,13 +40,13 @@ func (h *UserHandler) Create(c *gin.Context) {
 		Password: req.Password,
 	}
 
-	err := h.Service.CreateUser(user)
+	user, err := h.Service.CreateUser(user)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Couldn't create user", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "User created"})
+	c.JSON(http.StatusOK, gin.H{"message": "User created", "user_id": user.ID})
 }
 
 func (h *UserHandler) Authorization(c *gin.Context) {
@@ -60,13 +60,13 @@ func (h *UserHandler) Authorization(c *gin.Context) {
 		return
 	}
 
-	err := h.Service.Login(req.Login, req.Password)
+	user, err := h.Service.Login(req.Login, req.Password)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Incorrect password or login", "details": err.Error()})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"message": "Login succesfull"})
+	c.JSON(http.StatusOK, gin.H{"message": "Login succesfull", "user_id": user.ID})
 }
 
 func (h *UserHandler) Get(c *gin.Context) {

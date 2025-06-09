@@ -22,25 +22,31 @@ func (s *UserService) GetAllUsers() (*[]models.User, error) {
 	return s.repo.GetAllUsers()
 }
 
-func (s *UserService) CreateUser(user *models.User) error {
+func (s *UserService) CreateUser(user *models.User) (*models.User, error) {
 	dbUser, _ := s.repo.GetByLogin(user.Login)
 
 	if dbUser.Login != "" {
-		return fmt.Errorf("User with this login already registered")
+		return nil, fmt.Errorf("User with this login already registered")
 	}
 
-	return s.repo.Create(user)
+	createdUser, err := s.repo.Create(user)
+
+	if err != nil {
+		return nil, fmt.Errorf("Error creating user")
+	}
+
+	return createdUser, nil
 }
 
-func (s *UserService) Login(login, password string) error {
+func (s *UserService) Login(login, password string) (*models.User, error) {
 	user, err := s.repo.GetByLogin(login)
 	if err != nil {
-		return fmt.Errorf("Cannot find user %s", login)
+		return nil, fmt.Errorf("Cannot find user %s", login)
 	}
 
 	if user.Password != password {
-		return fmt.Errorf("Incorrect password")
+		return nil, fmt.Errorf("Incorrect password")
 	}
 
-	return nil
+	return user, nil
 }
