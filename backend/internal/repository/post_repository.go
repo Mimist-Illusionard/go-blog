@@ -46,6 +46,7 @@ func (r *PostGORMRepository) GetPostWithComments(postId uint) (*models.Post, err
 	err := r.DB.
 		Preload("Comments").
 		Preload("Comments.User").
+		Preload("User").
 		First(&post, postId).Error
 	if err != nil {
 		return nil, err

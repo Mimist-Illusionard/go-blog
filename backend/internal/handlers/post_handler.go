@@ -19,7 +19,8 @@ func CreatePostHandler(s *services.PostService) *PostHandler {
 }
 
 func (h *PostHandler) InitializeHandler(ginEngine *gin.Engine) {
-	ginEngine.GET("/posts/*id", h.Get)
+	ginEngine.GET("/posts/", h.Get)
+	ginEngine.GET("/posts/:id", h.Get)
 	ginEngine.POST("/posts/", h.Create)
 	ginEngine.PUT("/posts/:id", h.Put)
 	ginEngine.DELETE("/posts/:id", h.Delete)
@@ -28,7 +29,7 @@ func (h *PostHandler) InitializeHandler(ginEngine *gin.Engine) {
 func (h *PostHandler) Get(c *gin.Context) {
 	postID := c.Param("id")
 
-	if postID != "/" {
+	if postID != "/" && postID != "" {
 		id, err := strconv.Atoi(postID)
 		if err != nil {
 			c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid post ID"})
@@ -41,7 +42,22 @@ func (h *PostHandler) Get(c *gin.Context) {
 			return
 		}
 
-		c.JSON(http.StatusOK, post)
+		var comments []dto.CommentResponse
+		for _, comment := range post.Comments {
+			comments = append(comments, dto.CommentResponse{
+				ID:     comment.ID,
+				Text:   comment.Text,
+				Author: comment.User.Login,
+			})
+		}
+
+		c.JSON(http.StatusOK, dto.PostResponse{
+			ID:       post.ID,
+			Text:     post.Text,
+			Author:   post.User.Login,
+			Comments: comments,
+		})
+
 		return
 	}
 
