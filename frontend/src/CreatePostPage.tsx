@@ -41,7 +41,7 @@ const CreatePostPage: React.FC = () => {
 
       setSuccess(true);
       setText('');
-      setTimeout(() => navigate('/'), 1000);
+      setTimeout(() => navigate('/feed'), 1000);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Произошла ошибка');
     }

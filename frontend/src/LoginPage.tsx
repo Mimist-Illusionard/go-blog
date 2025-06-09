@@ -50,7 +50,7 @@ const LoginPage: React.FC = () => {
       const data = await response.json();
       localStorage.setItem('token', data.token);
       localStorage.setItem('userId', data.user_id);
-      navigate('/');
+      navigate('/feed');
     } catch (error) {
       alert(error instanceof Error ? error.message : 'Произошла ошибка при регистрации');
     }

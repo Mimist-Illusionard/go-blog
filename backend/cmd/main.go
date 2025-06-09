@@ -2,12 +2,12 @@ package main
 
 import (
 	"fmt"
-	"go-blog/backend/config"
-	"go-blog/backend/internal/handlers"
-	"go-blog/backend/internal/models"
-	"go-blog/backend/internal/repository"
-	"go-blog/backend/internal/services"
-	"go-blog/backend/utils/log"
+	"go-blog/config"
+	"go-blog/internal/handlers"
+	"go-blog/internal/models"
+	"go-blog/internal/repository"
+	"go-blog/internal/services"
+	"go-blog/utils/log"
 
 	"github.com/gin-gonic/gin"
 

@@ -1,8 +1,8 @@
 package services
 
 import (
-	"go-blog/backend/internal/models"
-	"go-blog/backend/internal/repository"
+	"go-blog/internal/models"
+	"go-blog/internal/repository"
 )
 
 type PostService struct {
