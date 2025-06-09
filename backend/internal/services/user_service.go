@@ -23,14 +23,20 @@ func (s *UserService) GetAllUsers() (*[]models.User, error) {
 }
 
 func (s *UserService) CreateUser(user *models.User) (*models.User, error) {
-	dbUser, _ := s.repo.GetByLogin(user.Login)
+	if user.Login == "" {
+		return nil, fmt.Errorf("Login must not be empty")
+	}
 
+	if user.Password == "" {
+		return nil, fmt.Errorf("Password must not be empty")
+	}
+
+	dbUser, _ := s.repo.GetByLogin(user.Login)
 	if dbUser.Login != "" {
 		return nil, fmt.Errorf("User with this login already registered")
 	}
 
 	createdUser, err := s.repo.Create(user)
-
 	if err != nil {
 		return nil, fmt.Errorf("Error creating user")
 	}
